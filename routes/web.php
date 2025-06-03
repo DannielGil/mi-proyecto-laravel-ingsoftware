@@ -10,18 +10,17 @@ use App\Http\Controllers\Auth\NewPasswordController;
 
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Admin\UsuarioManagementController;
-use App\Http\Controllers\ProyectoController; // Asegúrate de tener este controlador
+use App\Http\Controllers\ProyectoController;
+use App\Http\Controllers\DepartamentoController; // Agregado para el manejo de Departamentos
 
-// Controladores para Dashboards específicos por rol
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\DirectorController;
 use App\Http\Controllers\CoordinadorController;
-use App\Http\Controllers\ProfesorController; // Cambiado a ProfesorController, si es el controlador de docentes
-use App\Http\Controllers\RectorController; // <-- ¡NUEVO! Importa el controlador del Rector
-use App\Http\Controllers\SupervisorController; // Si el Supervisor es un rol distinto y no es Coordinador
+use App\Http\Controllers\ProfesorController; // Controlador del Docente
+use App\Http\Controllers\RectorController;
+use App\Http\Controllers\SupervisorController;
 
 // --- 1. Ruta Raíz (/) ---
-// Siempre redirige a login, sin comprobar si está autenticado.
 Route::get('/', function () {
     return redirect()->route('login');
 })->name('home');
@@ -31,7 +30,6 @@ Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthenticatedSessionController::class, 'create'])->name('login');
     Route::post('/login', [AuthenticatedSessionController::class, 'store']);
 
-    // Rutas de Recuperación de Contraseña
     Route::get('/forgot-password', [PasswordResetLinkController::class, 'create'])->name('password.request');
     Route::post('/forgot-password', [PasswordResetLinkController::class, 'store'])->name('password.email');
     Route::get('/reset-password/{token}', [NewPasswordController::class, 'create'])->name('password.reset');
@@ -39,29 +37,49 @@ Route::middleware('guest')->group(function () {
 });
 
 // --- 3. Rutas de Usuarios Autenticados (Middleware 'auth') ---
-// Todas las rutas dentro de este grupo requieren que el usuario esté logueado.
 Route::middleware(['auth'])->group(function () {
 
-    // Ruta de Logout
     Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 
-    // Dashboard Principal (Redirección por rol)
-    // Este `dashboard` puede ser genérico y redirigir según el rol del usuario logueado.
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    // --- Rutas de Dashboards Específicos por Rol y su Funcionalidad ---
+    // ====================================================================
+    // Rutas de PROYECTOS que pueden ser accesibles por MÚLTIPLES ROLES
+    // (La autorización detallada para cada método está en ProyectoController::__construct)
+    // ====================================================================
+    Route::prefix('proyectos')->name('proyectos.')->group(function () {
+        // Mover la ruta de descarga de adjuntos (más específica) ARRIBA
+        Route::get('/adjunto/{adjunto}/descargar', [ProyectoController::class, 'descargarAdjunto'])->name('descargar_adjunto');
+
+        // Luego las rutas con un comodín (menos específicas)
+        Route::get('/{proyecto}', [ProyectoController::class, 'show'])->name('show');
+        Route::put('/{proyecto}/aprobar', [ProyectoController::class, 'aprobar'])->name('aprobar');
+        Route::put('/{proyecto}/rechazar', [ProyectoController::class, 'rechazar'])->name('rechazar');
+        
+    });
+    // ====================================================================
+
 
     // Rol: ADMINISTRADOR
     Route::middleware(['role:Administrador'])->group(function () {
         Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
-        // Gestión de Usuarios (Crear y Ver usuario)
         Route::prefix('usuarios')->name('usuarios.')->group(function () {
-            Route::get('/', [UsuarioManagementController::class, 'index'])->name('index'); // Ver usuarios
-            Route::get('/crear', [UsuarioManagementController::class, 'create'])->name('create'); // Crear usuario
+            Route::get('/', [UsuarioManagementController::class, 'index'])->name('index');
+            Route::get('/crear', [UsuarioManagementController::class, 'create'])->name('create');
             Route::post('/', [UsuarioManagementController::class, 'store'])->name('store');
             Route::get('/{usuario}/editar', [UsuarioManagementController::class, 'edit'])->name('edit');
             Route::put('/{usuario}', [UsuarioManagementController::class, 'update'])->name('update');
             Route::delete('/{usuario}', [UsuarioManagementController::class, 'destroy'])->name('destroy');
+        });
+
+        // Rutas de Departamentos (para el Administrador)
+        Route::prefix('departamentos')->name('departamentos.')->group(function () {
+            Route::get('/', [DepartamentoController::class, 'index'])->name('index'); // Esta es la ruta 'departamentos.index'
+            Route::get('/crear', [DepartamentoController::class, 'create'])->name('create');
+            Route::post('/', [DepartamentoController::class, 'store'])->name('store');
+            Route::get('/{departamento}/editar', [DepartamentoController::class, 'edit'])->name('edit');
+            Route::put('/{departamento}', [DepartamentoController::class, 'update'])->name('update');
+            Route::delete('/{departamento}', [DepartamentoController::class, 'destroy'])->name('destroy');
         });
     });
 
@@ -71,13 +89,13 @@ Route::middleware(['auth'])->group(function () {
 
         // Rutas de Proyectos para el rol Docente
         Route::prefix('proyectos')->name('proyectos.')->group(function () {
-            Route::get('/mis-proyectos', [ProyectoController::class, 'misProyectos'])->name('mis_proyectos'); // "Mis Proyectos"
-            Route::get('/crear', [ProyectoController::class, 'create'])->name('create'); // "Crear Nuevo Proyecto"
+            Route::get('docentes/mis-proyectos', [ProyectoController::class, 'misProyectos'])->name('mis_proyectos');
+            Route::get('create', [ProyectoController::class, 'create'])->name('create'); // Simplificado la URI
             Route::post('/', [ProyectoController::class, 'store'])->name('store');
-            // Rutas adicionales para registrar avances y subir documentos para los proyectos de un docente
-            Route::get('/{proyecto}/editar', [ProyectoController::class, 'edit'])->name('edit'); // Para editar proyectos existentes
-            Route::put('/{proyecto}', [ProyectoController::class, 'update'])->name('update'); // Para guardar avances y documentos
-            Route::post('/{proyecto}/subir-documento', [ProyectoController::class, 'subirDocumento'])->name('subir_documento'); // Para subir docs a un proyecto específico
+            Route::get('/{proyecto}/editar', [ProyectoController::class, 'edit'])->name('edit');
+            Route::put('/{proyecto}', [ProyectoController::class, 'update'])->name('update');
+            Route::post('/{proyecto}/subir-documento', [ProyectoController::class, 'subirDocumento'])->name('subir_documento');
+            Route::delete('/adjuntos/{adjunto}', [ProyectoController::class, 'eliminarAdjunto'])->name('eliminar_adjunto'); 
         });
     });
 
@@ -87,51 +105,36 @@ Route::middleware(['auth'])->group(function () {
 
         // Rutas de Proyectos para el Coordinador (Supervisión)
         Route::prefix('proyectos')->name('proyectos.')->group(function () {
-            Route::get('/', [ProyectoController::class, 'indexCoordinador'])->name('index'); // "Proyectos" (general para Coordinador)
+            Route::get('proyectos/index', [ProyectoController::class, 'indexCoordinador'])->name('indexCoordinador');
+            // ¡CORREGIDO AQUÍ! Se añadió un nombre explícito a la ruta de validar proyectos
             Route::get('/validar', [ProyectoController::class, 'validarProyectos'])->name('validar_proyectos');
             Route::get('/terminados', [ProyectoController::class, 'terminados'])->name('terminados');
-            Route::get('/en_curso', [ProyectoController::class, 'en_curso'])->name('en_curso'); // Añadido nombre a la ruta
-            Route::get('/{proyecto}', [ProyectoController::class, 'show'])->name('show'); // Ver detalles de un proyecto
-            // Si el coordinador puede modificar el estado o detalles de un proyecto:
-            Route::put('/{proyecto}/aprobar', [ProyectoController::class, 'aprobar'])->name('aprobar');
-            Route::put('/{proyecto}/rechazar', [ProyectoController::class, 'rechazar'])->name('rechazar');
-            // ... otras rutas de supervisión
+            Route::get('/en-curso', [ProyectoController::class, 'enCurso'])->name('en_curso'); 
         });
     });
 
     // Rol: RECTOR
     Route::middleware(['role:Rector'])->group(function () {
         Route::get('/rector/dashboard', [RectorController::class, 'index'])->name('rector.dashboard');
-        // "Métricas de Proyectos"
         Route::get('/metricas/proyectos', [RectorController::class, 'metricasProyectos'])->name('metricas.proyectos');
-        // Rutas adicionales para métricas específicas si las hay
     });
 
-    // Rol: DIRECTOR (se mantiene como ejemplo, si no es Rector)
+    // Rol: DIRECTOR
     Route::middleware(['role:Director'])->group(function () {
         Route::get('/director/dashboard', [DirectorController::class, 'index'])->name('director.dashboard');
-        // ... (añade rutas específicas para Director si este rol es distinto del Rector)
     });
 
-    // Rol: SUPERVISOR (se mantiene como ejemplo, si no es Coordinador o Rector)
+    // Rol: SUPERVISOR
     Route::middleware(['role:Supervisor'])->group(function () {
         Route::get('/supervisor/dashboard', [SupervisorController::class, 'index'])->name('supervisor.dashboard');
-        // ... (añade rutas específicas para Supervisor si este rol es distinto)
     });
 
     // --- Rutas Comunes para Todos los Autenticados ---
-    // Perfil de Usuario
-    Route::get('/profile', [UsuarioManagementController::class, 'showProfile'])->name('profile.show'); // <-- Asumiendo que hay un método showProfile
-    // Si tienes un controlador específico para el perfil, impórtalo y úsalo aquí.
-    // Ej: use App\Http\Controllers\ProfileController;
-    // Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
+    Route::get('/profile', [UsuarioManagementController::class, 'showProfile'])->name('profile.show');
 
-    // Ruta de descarga de adjuntos (puede ser accesible por varios roles)
-    Route::get('/proyectos/adjunto/{adjunto}/descargar', [ProyectoController::class, 'descargarAdjunto'])->name('proyectos.descargar_adjunto');
+}); // Fin del grupo de middleware 'auth'
 
-});
-
-### **Ruta para Acceso No Autorizado**
+// Ruta para Acceso No Autorizado (si el middleware de rol de Spatie lo usa)
 Route::get('/unauthorized', function () {
-    return view('errors.unauthorized'); // Asegúrate de crear este archivo: resources/views/errors/unauthorized.blade.php
+    return view('errors.unauthorized');
 })->name('unauthorized');

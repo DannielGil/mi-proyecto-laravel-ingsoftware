@@ -13,7 +13,7 @@
     <div class="dashboard-container">
         <aside class="sidebar">
             <div class="sidebar-header">
-                <h3>Mi Dashboard</h3>
+                <h3>Shirotech</h3>
             </div>
             <ul class="sidebar-menu">
                 <li><a href="{{ route('dashboard') }}"><i class="fas fa-home"></i> Inicio</a></li> {{-- Enlace al dashboard principal --}}

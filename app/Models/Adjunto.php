@@ -12,9 +12,6 @@ class Adjunto extends Model
     // Define el nombre de la tabla si no sigue la convención de Laravel (plural del nombre del modelo)
     // protected $table = 'adjuntos'; // En este caso, 'adjuntos' es el nombre por defecto, así que es opcional
 
-    // Define la clave primaria si no es 'id'
-    // protected $primaryKey = 'adjunto_id'; // Si usas adjunto_id como PK
-
     // Define los campos que se pueden asignar masivamente (fillable)
     protected $fillable = [
         'proyecto_id',          // Clave foránea para relacionar con un proyecto
@@ -29,6 +26,6 @@ class Adjunto extends Model
      */
     public function proyecto()
     {
-        return $this->belongsTo(Proyecto::class, 'proyecto_id');
+        return $this->belongsTo(Proyecto::class, 'proyecto_id', 'proyecto_id');
     }
 }

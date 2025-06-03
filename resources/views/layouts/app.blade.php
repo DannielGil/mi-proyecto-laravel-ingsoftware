@@ -32,6 +32,9 @@
         {{-- Si tienes otros roles como Supervisor o Director con CSS específico, añádelos aquí --}}
         @endif
     @endauth
+
+    {{-- Sección para scripts específicos de la cabecera (ej. Chart.js CDN) --}}
+    @yield('scripts_head')
 </head>
 <body>
     <div id="app">
@@ -41,10 +44,27 @@
                     <h3>Shirotech</h3>
                 </div>
                 <ul class="sidebar-menu">
-                    {{-- Siempre mostrar el enlace al dashboard general si existe --}}
+                    {{-- El dashboard inicial podría ser el de tu rol por defecto --}}
+                    {{-- Generalmente, el dashboard del usuario autenticado --}}
                     <li>
-                        <a href="{{ route('dashboard') }}"> {{-- Asegúrate de que esta ruta 'dashboard' existe y redirige según el rol --}}
-                            <i class="bi bi-house-door-fill"></i> Navegación                        </a>
+                        {{-- Asegúrate de que estas rutas existan y lleven al dashboard correcto del usuario --}}
+                        @if(Auth::check())
+                            @if(Auth::user()->isAdministrador())
+                                <a href="{{ route('admin.dashboard') }}">
+                            @elseif(Auth::user()->isDocente())
+                                <a href="{{ route('docente.dashboard') }}">
+                            @elseif(Auth::user()->isCoordinador())
+                                <a href="{{ route('coordinador.dashboard') }}">
+                            @elseif(Auth::user()->isRector())
+                                <a href="{{ route('rector.dashboard') }}">
+                            @else
+                                <a href="{{ route('dashboard') }}"> {{-- Ruta por defecto si no hay rol específico --}}
+                            @endif
+                        @else
+                            <a href="/"> {{-- Si no está autenticado, lleva a la raíz --}}
+                        @endif
+                            <i class="bi bi-house-door-fill"></i> Inicio
+                        </a>
                     </li>
 
                     @auth
@@ -79,8 +99,8 @@
                         {{-- --- Enlaces específicos para COORDINADOR --- --}}
                         @if(Auth::user()->isCoordinador())
                             <li>
-                                <a href="{{ route('proyectos.index') }}"> {{-- Podría ser un índice general de proyectos para supervisar --}}
-                                    <i class="bi bi-journal-check"></i> Proyectos
+                                <a href="{{ route('proyectos.indexCoordinador') }}"> {{-- Ruta ajustada para el índice del Coordinador --}}
+                                    <i class="bi bi-journal-check"></i> Todos los Proyectos
                                 </a>
                             </li>
                         @endif
@@ -94,6 +114,16 @@
                             </li>
                         @endif
 
+                        <li class="nav-item">
+                            <hr class="sidebar-divider my-2"> {{-- Un separador, si te gusta el estilo --}}
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <button type="submit" class="nav-link" style="width: 100%; text-align: left; background: none; border: none; cursor: pointer; color: inherit;">
+                                    <i class="bi bi-box-arrow-right"></i>
+                                    <span>Cerrar Sesión</span>
+                                </button>
+                            </form>
+                        </li>
 
                     @endauth
                 </ul>
@@ -116,26 +146,22 @@
                             {{-- Si el usuario está autenticado, muestra su nombre y el menú desplegable --}}
                             <li class="nav-item dropdown">
                                 <a id="navbarDropdownUser" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                                    {{ Auth::user()->nombre }} {{ Auth::user()->apellido }} {{-- Muestra el nombre y apellido del usuario --}}
+                                    {{ Auth::user()->nombre }} {{ Auth::user()->apellido }}
                                 </a>
 
                                 <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownUser">
-
-                                    {{-- Botón de Cerrar Sesión para TODOS los usuarios autenticados --}}
-                                    <a class="dropdown-item" href="{{ route('logout') }}"
-                                       onclick="event.preventDefault();
-                                                     document.getElementById('logout-form').submit();">
-                                        {{ __('Cerrar Sesión') }}
+                                    {{-- Aquí puedes añadir enlaces del perfil del usuario, configuración, etc. --}}
+                                    <a class="dropdown-item" href="#">
+                                        <i class="bi bi-person-circle"></i> Mi Perfil
                                     </a>
-                                    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                                        @csrf
-                                    </form>
+                                    {{-- El botón de cerrar sesión ya está en el sidebar, puedes quitarlo de aquí si quieres --}}
                                 </div>
                             </li>
                         @endguest
                     </ul>
                 </div>
 
+                {{-- Aquí es donde se inyectará el contenido específico de cada página --}}
                 @yield('content')
             </div>
         </div>
@@ -143,5 +169,8 @@
 
     {{-- Scripts de Bootstrap (al final del body para un mejor rendimiento) --}}
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+    {{-- Sección para scripts específicos del cuerpo (ej. inicialización de Chart.js) --}}
+    @yield('scripts_body')
 </body>
 </html>

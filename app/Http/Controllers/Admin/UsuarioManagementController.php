@@ -9,7 +9,7 @@ use App\Models\Rol;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
-use Illuminate\Support\Facades\Auth; // <-- ¡Esta es la línea que faltaba!
+use Illuminate\Support\Facades\Auth; // <-- ¡Esta línea es necesaria y ya la habías puesto!
 
 class UsuarioManagementController extends Controller
 {
@@ -45,22 +45,22 @@ class UsuarioManagementController extends Controller
             'departamento_id' => 'nullable|exists:departamentos,departamento_id',
             'roles' => 'nullable|array',
             'roles.*' => 'exists:roles,rol_id',
-            'activo' => 'boolean',
+            'activo' => 'boolean', // El checkbox si no está marcado, no se envía, Laravel lo trata como false
         ]);
 
         $usuario = Usuario::create([
             'nombre' => $request->nombre,
             'apellido' => $request->apellido,
             'email' => $request->email,
-            'password_hash' => Hash::make($request->password),
+            'password_hash' => Hash::make($request->password), // Asegúrate que tu modelo Usuario usa 'password_hash' para la contraseña
             'departamento_id' => $request->departamento_id,
-            'activo' => $request->has('activo'),
+            'activo' => $request->has('activo'), // 'has' verifica si el campo está presente (marcado)
         ]);
 
         if ($request->has('roles')) {
             $usuario->roles()->sync($request->roles);
         } else {
-            $usuario->roles()->detach();
+            $usuario->roles()->detach(); // Si no se selecciona ningún rol, se desvinculan todos
         }
 
         return redirect()->route('usuarios.index')->with('success', 'Usuario creado exitosamente.');
@@ -101,7 +101,7 @@ class UsuarioManagementController extends Controller
                 'max:255',
                 Rule::unique('usuarios', 'email')->ignore($usuario->usuario_id, 'usuario_id'),
             ],
-            'password' => 'nullable|string|min:8|confirmed',
+            'password' => 'nullable|string|min:8|confirmed', // 'nullable' permite dejarlo vacío para no cambiarlo
             'departamento_id' => 'nullable|exists:departamentos,departamento_id',
             'roles' => 'nullable|array',
             'roles.*' => 'exists:roles,rol_id',
@@ -114,6 +114,7 @@ class UsuarioManagementController extends Controller
         $usuario->departamento_id = $request->departamento_id;
         $usuario->activo = $request->has('activo');
 
+        // Solo actualiza la contraseña si se ha proporcionado una nueva
         if ($request->filled('password')) {
             $usuario->password_hash = Hash::make($request->password);
         }
@@ -135,12 +136,12 @@ class UsuarioManagementController extends Controller
     public function destroy(Usuario $usuario)
     {
         // Opcional: prevenir eliminar el propio usuario autenticado o un administrador
-        if (Auth::id() === $usuario->usuario_id) { // <-- ¡Ahora Auth::id() funcionará!
+        if (Auth::id() === $usuario->usuario_id) {
             return redirect()->route('usuarios.index')->with('error', 'No puedes eliminar tu propia cuenta.');
         }
 
-        $usuario->roles()->detach();
-        $usuario->delete();
+        $usuario->roles()->detach(); // Primero desvincula los roles
+        $usuario->delete(); // Luego elimina el usuario
 
         return redirect()->route('usuarios.index')->with('success', 'Usuario eliminado exitosamente.');
     }

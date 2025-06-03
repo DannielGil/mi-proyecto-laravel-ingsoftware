@@ -35,9 +35,8 @@
                             <td>{{ \Carbon\Carbon::parse($proyecto->fecha_inicio)->format('d/m/Y') }}</td>
                             <td>{{ \Carbon\Carbon::parse($proyecto->fecha_fin_estimada)->format('d/m/Y') }}</td>
                             <td>
-                                {{-- Aquí puedes añadir botones para ver detalles, editar, etc. --}}
-                                <a href="#" class="btn btn-sm btn-info">Ver</a>
-                                <a href="#" class="btn btn-sm btn-warning">Editar</a>
+                                {{-- Aquí hemos corregido los enlaces a las rutas 'show' y 'edit' --}}
+                                <a href="{{ route('proyectos.edit', $proyecto->proyecto_id) }}" class="btn btn-sm btn-warning">Editar</a>
                             </td>
                         </tr>
                     @endforeach

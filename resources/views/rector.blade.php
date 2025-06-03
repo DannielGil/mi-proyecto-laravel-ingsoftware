@@ -9,8 +9,8 @@
 
 <div class="welcome-section">
     {{-- Aquí se muestra el nombre y apellido del usuario --}}
-    <h1>Coordinador {{ Auth::user()->nombre }} {{ Auth::user()->apellido }}</h1>
-    <p>Aquí puedes gestionar y validar proyectos, y supervisar el progreso de los docentes</p>
+    <h1>Rector {{ Auth::user()->nombre }} {{ Auth::user()->apellido }}</h1>
+    <p>Aquí puedes validar las métricas de los proyectos</p>
 </div>
 
     {{-- Puedes añadir más secciones o tarjetas aquí para el contenido del coordinador --}}
