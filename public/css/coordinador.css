@@ -1,0 +1,283 @@
+/* Definición de variables de color (para consistencia) */
+:root {
+    --color-primary-green: #28a745; /* Verde vibrante para elementos principales */
+    --color-secondary-green: #218838; /* Verde más oscuro para hover/activos */
+    --color-background-white: #ffffff;
+    --color-text-black: #343a40; /* Negro oscuro para texto */
+    --color-light-gray: #f8f9fa; /* Fondo general de la página y elementos sutiles */
+    --color-border-gray: #dee2e6; /* Borde de tarjetas y elementos */
+
+    /* Colores para estados de proyectos */
+    --color-status-approved: #28a745;   /* Verde para Aprobado */
+    --color-status-rejected: #dc3545;   /* Rojo para Rechazado */
+    --color-status-pending: #ffc107;    /* Amarillo para Pendiente */
+    --color-status-other: #6c757d;      /* Gris para otros estados o N/A */
+}
+
+body {
+    background-color: var(--color-light-gray);
+    color: var(--color-text-black);
+    font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    line-height: 1.6;
+}
+
+/* --- Encabezado de la Página y Botón de Volver --- */
+.container-fluid {
+    padding: 30px 15px; /* Más padding en los lados */
+}
+
+.d-flex.justify-content-between.align-items-center.mb-4 {
+    margin-bottom: 2rem !important; /* Más espacio debajo del título */
+}
+
+h1 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--color-text-black);
+}
+
+.btn-secondary {
+    background-color: #6c757d; /* Gris de Bootstrap */
+    border-color: #6c757d;
+    color: var(--color-background-white);
+    font-weight: 600;
+    padding: 0.6rem 1.2rem;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+    border-color: #545b62;
+    color: var(--color-background-white);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.btn-secondary .bi {
+    margin-right: 8px; /* Espacio entre el ícono y el texto */
+}
+
+
+/* --- Estilos para Mensajes de Alerta --- */
+.alert {
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid transparent;
+    border-radius: 0.25rem;
+    font-weight: 500;
+    color: var(--color-text-black); /* Asegura texto negro en alertas */
+}
+
+.alert-info {
+    background-color: #d1ecf1; /* Fondo azul claro */
+    border-color: #bee5eb;
+    color: #0c5460; /* Texto azul oscuro */
+}
+
+/* --- Estilos para las Tarjetas de Docentes (Agrupadores) --- */
+.card.mb-4.shadow-sm {
+    border: 1px solid var(--color-border-gray);
+    border-radius: 10px; /* Bordes más redondeados para las tarjetas principales */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08) !important; /* Sombra más pronunciada */
+    overflow: hidden; /* Asegura que los bordes redondeados se apliquen bien */
+}
+
+.card-header.bg-primary.text-white {
+    background-color: var(--color-primary-green) !important; /* Verde principal para el encabezado del docente */
+    color: var(--color-background-white) !important;
+    padding: 1.25rem 1.5rem; /* Más padding */
+    border-bottom: 2px solid var(--color-secondary-green); /* Borde verde oscuro */
+    display: flex; /* Para alinear el título y el contador */
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card-header.bg-primary.text-white h4 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0;
+    color: var(--color-background-white); /* Asegura texto blanco */
+}
+
+.card-header.bg-primary.text-white small {
+    font-size: 0.9rem;
+    opacity: 0.9;
+    color: var(--color-background-white); /* Asegura texto blanco */
+}
+
+.card-body {
+    padding: 2rem; /* Más padding para airear el contenido */
+}
+
+/* --- Estilos para las Tarjetas de Proyectos Individuales --- */
+.card.mb-3.border-secondary {
+    border: 1px solid var(--color-border-gray) !important; /* Borde gris suave para proyectos individuales */
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); /* Sombra sutil */
+    transition: transform 0.2s ease-in-out; /* Animación al pasar el ratón */
+}
+
+.card.mb-3.border-secondary:hover {
+    transform: translateY(-3px); /* Ligeramente elevado al hacer hover */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card-header.bg-light.text-dark {
+    background-color: var(--color-light-gray) !important; /* Fondo gris claro para encabezado de proyecto */
+    color: var(--color-text-black) !important;
+    padding: 0.9rem 1.25rem;
+    border-bottom: 1px solid var(--color-border-gray);
+    border-top-left-radius: 8px; /* Aplicar borde redondeado aquí también */
+    border-top-right-radius: 8px;
+}
+
+.card-header.bg-light.text-dark h5 {
+    font-size: 1.15rem;
+    font-weight: 600;
+    margin-bottom: 0;
+    color: var(--color-text-black); /* Asegura texto negro */
+}
+
+/* --- Estilos para Badges de Estado --- */
+.badge {
+    padding: 0.6em 0.9em;
+    font-size: 80%;
+    font-weight: 700;
+    border-radius: 0.25rem;
+    text-transform: uppercase; /* Mayúsculas para los estados */
+}
+
+.badge.bg-success {
+    background-color: var(--color-status-approved) !important;
+    color: var(--color-background-white);
+}
+
+.badge.bg-danger {
+    background-color: var(--color-status-rejected) !important;
+    color: var(--color-background-white);
+}
+
+.badge.bg-warning.text-dark {
+    background-color: var(--color-status-pending) !important;
+    color: var(--color-text-black) !important; /* Asegura texto negro sobre amarillo */
+}
+
+.badge.bg-secondary {
+    background-color: var(--color-status-other) !important;
+    color: var(--color-background-white);
+}
+
+/* --- Estilos para la Lista de Descripción (dl) --- */
+dl.row {
+    margin-bottom: 0; /* Elimina el margen inferior predeterminado */
+}
+
+dl.row dt {
+    font-weight: 600; /* Términos de descripción en negrita */
+    color: var(--color-text-black);
+    padding-bottom: 0.5rem;
+}
+
+dl.row dd {
+    color: var(--color-text-black); /* Contenido de descripción en negro */
+    padding-bottom: 0.5rem;
+}
+
+.text-info {
+    color: #17a2b8 !important; /* Azul de Bootstrap para "Leer más" */
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+.text-info:hover {
+    color: #117a8b !important;
+    text-decoration: underline;
+}
+
+/* --- Estilos para Botones de Acción (Aprobar/Rechazar) --- */
+.d-flex.justify-content-end {
+    margin-top: 1rem; /* Espacio sobre los botones de acción */
+}
+
+.btn-sm {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.875rem;
+    border-radius: 4px;
+}
+
+.btn-success {
+    background-color: var(--color-primary-green);
+    border-color: var(--color-primary-green);
+    color: var(--color-background-white);
+}
+
+.btn-success:hover {
+    background-color: var(--color-secondary-green);
+    border-color: var(--color-secondary-green);
+    color: var(--color-background-white);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+.btn-danger {
+    background-color: var(--color-status-rejected);
+    border-color: var(--color-status-rejected);
+    color: var(--color-background-white);
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+    border-color: #bd2130;
+    color: var(--color-background-white);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+.btn-sm .bi {
+    margin-right: 5px; /* Espacio entre el ícono y el texto en botones pequeños */
+}
+
+/* --- Estilos para Paginación --- */
+.pagination {
+    display: flex;
+    padding-left: 0;
+    list-style: none;
+    border-radius: 0.25rem;
+    justify-content: center; /* Centrar la paginación */
+    margin-top: 20px;
+}
+
+.page-item .page-link {
+    position: relative;
+    display: block;
+    padding: 0.5rem 0.75rem;
+    margin-left: -1px;
+    line-height: 1.25;
+    color: var(--color-primary-green);
+    background-color: var(--color-background-white);
+    border: 1px solid var(--color-border-gray);
+    transition: all 0.3s ease;
+}
+
+.page-item.active .page-link {
+    z-index: 3;
+    color: var(--color-background-white);
+    background-color: var(--color-primary-green);
+    border-color: var(--color-primary-green);
+}
+
+.page-item .page-link:hover {
+    z-index: 2;
+    color: var(--color-background-white);
+    text-decoration: none;
+    background-color: var(--color-secondary-green);
+    border-color: var(--color-secondary-green);
+}
+
+.page-item.disabled .page-link {
+    color: #6c757d;
+    pointer-events: none;
+    background-color: #e9ecef;
+    border-color: #dee2e6;
+}

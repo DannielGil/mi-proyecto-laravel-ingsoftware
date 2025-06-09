@@ -34,7 +34,6 @@
                                 <th>Email</th>
                                 <th>Departamento</th>
                                 <th>Roles</th>
-                                <th>Activo</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
@@ -52,13 +51,6 @@
                                         @empty
                                             Sin roles
                                         @endforelse
-                                    </td>
-                                    <td>
-                                        @if ($usuario->activo)
-                                            <span class="badge bg-success">Sí</span>
-                                        @else
-                                            <span class="badge bg-danger">No</span>
-                                        @endif
                                     </td>
                                     <td>
                                         <a href="{{ route('usuarios.edit', $usuario->usuario_id) }}" class="btn btn-sm btn-warning">Editar</a>

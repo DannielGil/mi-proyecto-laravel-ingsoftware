@@ -102,12 +102,6 @@
                                     <strong>{{ $message }}</strong>
                                 </span>
                             @enderror
-                            <div class="form-text">Mantén presionado Ctrl (o Cmd en Mac) para seleccionar múltiples roles.</div>
-                        </div>
-
-                        <div class="mb-3 form-check">
-                            <input type="checkbox" class="form-check-input" id="activo" name="activo" value="1" {{ old('activo', true) ? 'checked' : '' }}>
-                            <label class="form-check-label" for="activo">Activo</label>
                         </div>
 
                         <button type="submit" class="btn btn-success">Crear Usuario</button>

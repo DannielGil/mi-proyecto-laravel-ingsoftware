@@ -90,7 +90,7 @@ Route::middleware(['auth'])->group(function () {
         // Rutas de Proyectos para el rol Docente
         Route::prefix('proyectos')->name('proyectos.')->group(function () {
             Route::get('docentes/mis-proyectos', [ProyectoController::class, 'misProyectos'])->name('mis_proyectos');
-            Route::get('create', [ProyectoController::class, 'create'])->name('create'); // Simplificado la URI
+            Route::get('/proyectos/create', [ProyectoController::class, 'create'])->name('create'); // Simplificado la URI
             Route::post('/', [ProyectoController::class, 'store'])->name('store');
             Route::get('/{proyecto}/editar', [ProyectoController::class, 'edit'])->name('edit');
             Route::put('/{proyecto}', [ProyectoController::class, 'update'])->name('update');

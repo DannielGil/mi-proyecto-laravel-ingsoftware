@@ -24,7 +24,7 @@
         @if(Auth::user()->isCoordinador())
             <link href="{{ asset('css/coordinador.css') }}" rel="stylesheet">
         @elseif(Auth::user()->isDocente())
-            <link href="{{ asset('css/docente.css') }}" rel="stylesheet">
+            <link href="{{ asset('css/profesores.css') }}" rel="stylesheet">
         @elseif(Auth::user()->isAdministrador())
             <link href="{{ asset('css/admin.css') }}" rel="stylesheet">
         @elseif(Auth::user()->isRector())
